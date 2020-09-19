@@ -1,11 +1,9 @@
 require('dotenv').config()
 
-const cors = require('cors')
 const express = require('express')
 const morgan = require('morgan')
 
 const Person = require('./models/person')
-const { response } = require('express')
 
 morgan.token('data', function getData (req) {
   return JSON.stringify(req.body)
@@ -17,30 +15,7 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456"
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523"
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345"
-  },
-  {
-    id: 4,
-    name: "Mary Poppendick",
-    number: "39-23-6423122"
-  }
-]
-
-app.get('/api/persons', (req, res, next) => {
+app.get('/api/persons', (_req, res, next) => {
   Person.find({})
     .then(persons => {
       res.json(persons)
@@ -48,7 +23,7 @@ app.get('/api/persons', (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (req, res, next) => {
+app.get('/info', (_req, res, next) => {
   Person.countDocuments({}, function(error, count){
     if (error) {
       return next(error)
@@ -71,7 +46,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => res.status(204).end())
+    .then(_result => res.status(204).end())
     .catch(error => next(error))
 })
 
@@ -104,14 +79,14 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (_request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
 // handler of requests with unknown endpoint
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, _request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
