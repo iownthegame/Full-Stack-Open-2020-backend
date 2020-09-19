@@ -48,8 +48,13 @@ app.get('/api/persons', (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (req, res) => {
-  res.send(`Phonebook has info for ${persons.length} people<br><br>${new Date()}`)
+app.get('/info', (req, res, next) => {
+  Person.countDocuments({}, function(error, count){
+    if (error) {
+      return next(error)
+    }
+    res.send(`Phonebook has info for ${count} people<br><br>${new Date()}`)
+  })
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
