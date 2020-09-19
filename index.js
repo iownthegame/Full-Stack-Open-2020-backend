@@ -40,10 +40,12 @@ let persons = [
   }
 ]
 
-app.get('/api/persons', (req, res) => {
-  Person.find({}).then(persons => {
-    res.json(persons)
-  })
+app.get('/api/persons', (req, res, next) => {
+  Person.find({})
+    .then(persons => {
+      res.json(persons)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (req, res) => {
@@ -59,16 +61,16 @@ app.get('/api/persons/:id', (req, res, next) => {
         res.status(404).end()
       }
     })
-    .catch((error) => next(error))
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(result => res.status(204).end())
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   if (!body.name || !body.number) {
@@ -82,9 +84,11 @@ app.post('/api/persons', (req, res) => {
     number: body.number,
   })
 
-  person.save().then((savedPerson) => {
-    res.json(savedPerson)
-  })
+  person.save()
+    .then((savedPerson) => {
+      res.json(savedPerson)
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
